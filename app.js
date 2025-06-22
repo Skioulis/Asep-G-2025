@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const paginationContainer = document.getElementById('paginationContainer');
     const loadingElement = document.getElementById('loading');
 
+    const userPassword = "123456";
+
     // State variables
     let allQuestions = [];
     let currentMode = null;
@@ -375,10 +377,9 @@ document.addEventListener('DOMContentLoaded', function() {
             question.answers.forEach(answer => {
                 const isCorrect = answer.option === question.correctAnswer;
                 html += `
-                    <div class="list-group-item ${isCorrect ? 'correct-answer' : ''}">
+                    <div class="list-group-item answer-option" data-question-id="${questionId}" data-option="${answer.option}" data-correct="${isCorrect}">
                         <div class="d-flex w-100 justify-content-between">
                             <h6 class="mb-1">
-                                ${isCorrect ? '<i class="fas fa-check-circle text-success me-2"></i>' : ''}
                                 ${answer.option.toUpperCase()}.
                             </h6>
                         </div>
@@ -403,7 +404,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="mb-3">
                                 <label for="category-${questionId}" class="form-label">Category</label>
-                                <input type="text" class="form-control" id="category-${questionId}" value="${question.category || ''}">
+                                <select class="form-select" id="category-${questionId}">
+                                    <option value="Συνταγματικό Δίκαιο" ${question.category === 'Συνταγματικό Δίκαιο' ? 'selected' : ''}>Συνταγματικό Δίκαιο</option>
+                                    <option value="Διοικητικό Δίκαιο" ${question.category === 'Διοικητικό Δίκαιο' ? 'selected' : ''}>Διοικητικό Δίκαιο</option>
+                                    <option value="Ευρωπαϊκοί Θεσμοί και Δίκαιο" ${question.category === 'Ευρωπαϊκοί Θεσμοί και Δίκαιο' ? 'selected' : ''}>Ευρωπαϊκοί Θεσμοί και Δίκαιο</option>
+                                    <option value="Οικονομικές Επιστήμες" ${question.category === 'Οικονομικές Επιστήμες' ? 'selected' : ''}>Οικονομικές Επιστήμες</option>
+                                    <option value="Δημόσια Διοίκηση και Διαχείριση Ανθρώπινου Δυναμικού" ${question.category === 'Δημόσια Διοίκηση και Διαχείριση Ανθρώπινου Δυναμικού' ? 'selected' : ''}>Δημόσια Διοίκηση και Διαχείριση Ανθρώπινου Δυναμικού</option>
+                                    <option value="Πληροφορική και Ψηφιακή Διακυβέρνηση" ${question.category === 'Πληροφορική και Ψηφιακή Διακυβέρνηση' ? 'selected' : ''}>Πληροφορική και Ψηφιακή Διακυβέρνηση</option>
+                                    <option value="Σύγχρονη Ιστορία της Ελλάδος (1875-σήμερα)" ${question.category === 'Σύγχρονη Ιστορία της Ελλάδος (1875-σήμερα)' ? 'selected' : ''}>Σύγχρονη Ιστορία της Ελλάδος (1875-σήμερα)</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Correct Answer</label>
@@ -446,6 +455,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         questionsContainer.innerHTML = html;
+
+        // Add event listeners for answer options in non-edit mode
+        if (!isEditMode) {
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const isCorrect = this.dataset.correct === 'true';
+
+                    // Remove any previous styling from all options in this question
+                    const questionId = this.dataset.questionId;
+                    document.querySelectorAll(`.answer-option[data-question-id="${questionId}"]`).forEach(opt => {
+                        opt.classList.remove('list-group-item-success', 'list-group-item-danger');
+                    });
+
+                    // Apply appropriate styling to the clicked option
+                    if (isCorrect) {
+                        this.classList.add('list-group-item-success');
+                    } else {
+                        this.classList.add('list-group-item-danger');
+
+                        // Also highlight the correct answer
+                        document.querySelector(`.answer-option[data-question-id="${questionId}"][data-correct="true"]`)
+                            .classList.add('list-group-item-success');
+                    }
+                });
+            });
+        }
 
         // Add event listeners for edit buttons
         if (isEditMode) {
@@ -708,7 +743,34 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners for main buttons
     randomQuestionsBtn.addEventListener('click', showRandomQuestions);
     allQuestionsBtn.addEventListener('click', showAllQuestions);
-    editQuestionsBtn.addEventListener('click', showEditQuestions);
+    editQuestionsBtn.addEventListener('click', function() {
+        const passwordInput = document.getElementById('editPassword');
+        const password = passwordInput.value;
+
+        if (password === userPassword) {
+            showEditQuestions();
+            // Clear the password field after successful login
+            passwordInput.value = '';
+            // Remove any error styling
+            passwordInput.classList.remove('is-invalid');
+        } else {
+            // Show error for incorrect password
+            passwordInput.classList.add('is-invalid');
+
+            // Create or update error message
+            let errorMessage = document.getElementById('password-error');
+            if (!errorMessage) {
+                errorMessage = document.createElement('div');
+                errorMessage.id = 'password-error';
+                errorMessage.className = 'invalid-feedback';
+                errorMessage.textContent = 'Incorrect password. Please try again.';
+                passwordInput.parentNode.appendChild(errorMessage);
+            }
+
+            // Focus on the password field
+            passwordInput.focus();
+        }
+    });
 
     // Initialize the app
     async function init() {

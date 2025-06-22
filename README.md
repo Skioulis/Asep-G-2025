@@ -44,13 +44,16 @@ Click the "Show Random Questions" button to display 25 randomly selected questio
 Click the "Show All Questions" button to view all questions in the database. The questions are paginated for easier navigation.
 
 ### Edit Questions
-Click the "Edit Questions" button to enter edit mode. In edit mode, each question has an "Edit" button that allows you to modify:
+Click the "Edit Questions" button to enter edit mode. You will need to enter the correct password to access the edit functionality. In edit mode, each question has an "Edit" button that allows you to modify:
 - The question text
 - The category
 - The correct answer
 - The text of each answer option
 
 Changes are automatically saved to both localStorage (for quick access) and the server (for permanent storage).
+
+#### Changing the Password
+The default password is "123456". You can change this password by modifying the `userPassword` variable in the `app.js` file.
 
 ## Data Structure
 
