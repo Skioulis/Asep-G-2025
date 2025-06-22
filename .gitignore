@@ -1,0 +1,44 @@
+# Node modules (dependencies)
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env*.local
+
+# Coverage directory for test coverage reports
+coverage/
+
+# Output and build directories
+dist/
+build/
+tmp/
+temp/
+.cache/
+
+# Optional npm cache
+.npm
+
+# Editors/IDE folders
+.vscode/
+.idea/
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# Jest coverage reports
+jest-coverage/
+
+# Debug files
+debug.log
