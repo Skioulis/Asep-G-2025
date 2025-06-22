@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>
                         <span class="badge bg-secondary me-2">#${questionId}</span>
-                        ${currentQuestion.category ? `<span class="badge bg-info category-badge">${currentQuestion.category}</span>` : ''}
+                        ${currentQuestion.category ? `<span class="badge ${getCategoryColorClass(currentQuestion.category)} category-badge">${currentQuestion.category}</span>` : ''}
                         <span class="badge bg-primary ms-2">Question ${currentQuestionIndex + 1} of ${totalQuestions}</span>
                     </span>
                 </div>
@@ -191,6 +191,28 @@ document.addEventListener('DOMContentLoaded', function() {
         if (percentage >= 60) return 'bg-info';
         if (percentage >= 40) return 'bg-warning';
         return 'bg-danger';
+    }
+
+    // Get color class based on category
+    function getCategoryColorClass(category) {
+        switch(category) {
+            case 'Συνταγματικό Δίκαιο':
+                return 'bg-primary';
+            case 'Διοικητικό Δίκαιο':
+                return 'bg-success';
+            case 'Ευρωπαϊκοί Θεσμοί και Δίκαιο':
+                return 'bg-danger';
+            case 'Οικονομικές Επιστήμες':
+                return 'bg-warning';
+            case 'Δημόσια Διοίκηση και Διαχείριση Ανθρώπινου Δυναμικού':
+                return 'bg-info';
+            case 'Πληροφορική και Ψηφιακή Διακυβέρνηση':
+                return 'bg-dark';
+            case 'Σύγχρονη Ιστορία της Ελλάδος (1875-σήμερα)':
+                return 'bg-secondary';
+            default:
+                return 'bg-info';
+        }
     }
 
     // Get n random questions from array (ensuring uniqueness)
@@ -360,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span>
                             <span class="badge bg-secondary me-2">#${questionId}</span>
-                            ${question.category ? `<span class="badge bg-info category-badge">${question.category}</span>` : ''}
+                            ${question.category ? `<span class="badge ${getCategoryColorClass(question.category)} category-badge">${question.category}</span>` : ''}
                         </span>
                         ${isEditMode ? `
                             <button class="btn btn-sm btn-outline-primary edit-question-btn" data-id="${questionId}">
@@ -674,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span>
                             <span class="badge bg-secondary me-2">#${questionId}</span>
-                            ${question.category ? `<span class="badge bg-info category-badge">${question.category}</span>` : ''}
+                            ${question.category ? `<span class="badge ${getCategoryColorClass(question.category)} category-badge">${question.category}</span>` : ''}
                             <span class="badge bg-primary ms-2">Question ${index + 1} of ${randomQuestionSet.length}</span>
                             ${userAnswer ? 
                                 `<span class="badge ${isCorrect ? 'bg-success' : 'bg-danger'} ms-2">
