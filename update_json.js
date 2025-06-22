@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 // Read the questions.json file
 const questionsPath = './data/questions.json';

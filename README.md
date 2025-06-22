@@ -1,100 +1,93 @@
-# ASEP Questions Parser
+# ASEP Question Manager
 
-This project extracts questions and answers from a PDF file and saves them to JSON and CSV formats.
+A web application for managing ASEP questions with Bootstrap and Font Awesome.
 
 ## Features
 
-- Extracts questions and multiple-choice answers from PDF files
-- Saves the extracted data to JSON and CSV formats
-- Supports adding correct answers to the questions
-- Supports categorizing questions for better organization
+- **25 Random Questions**: Display a set of 25 randomly selected questions from the database.
+- **All Questions**: View the complete list of all questions in the database with pagination.
+- **Edit Questions**: Edit all questions to fix errors or update content.
 
-## How to Use
+## Installation
 
-### Extracting Questions from PDF
+1. Clone the repository:
+   ```
+   git clone <repository-url>
+   cd Asep
+   ```
 
-To extract questions and answers from the PDF file:
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-```bash
-node index.js
-```
+3. Start the server:
+   ```
+   npm start
+   ```
 
-This will:
-1. Read the PDF file from `./data/asep_questions.pdf`
-2. Extract questions and answers
-3. Save them to `./data/questions.json` and `./data/questions.csv`
+4. Open your browser and navigate to:
+   ```
+   http://localhost:3000
+   ```
 
-### Adding Correct Answers
+5. To stop the server:
+   - Press `Ctrl+C` in the terminal where the server is running
+   - Or navigate to `http://localhost:3000/stop` in your browser
 
-Since the PDF marks correct answers in red text, but the PDF parser cannot detect colors, you need to manually add the correct answers:
+## Usage
 
-#### Option 1: Using the Interactive Script
+### 25 Random Questions
+Click the "Show Random Questions" button to display 25 randomly selected questions from the database. This is useful for quick review or practice.
 
-Run the interactive script to set correct answers for each question:
+### All Questions
+Click the "Show All Questions" button to view all questions in the database. The questions are paginated for easier navigation.
 
-```bash
-node set_correct_answers.js
-```
+### Edit Questions
+Click the "Edit Questions" button to enter edit mode. In edit mode, each question has an "Edit" button that allows you to modify:
+- The question text
+- The category
+- The correct answer
+- The text of each answer option
 
-This script will:
-1. Display each question and its answer options
-2. Prompt you to enter the correct answer option (a, b, c, or d)
-3. Save your progress periodically and when you exit
+Changes are automatically saved to both localStorage (for quick access) and the server (for permanent storage).
 
-You can press Ctrl+C at any time to save your progress and exit.
+## Data Structure
 
-#### Option 2: Bulk Update
-
-If you already know the correct answers, you can update the JSON file directly:
-
-```bash
-node update_json.js
-```
-
-This script adds a `correctAnswer` field to each question in the JSON file. By default, it sets the first option as the correct answer, but you can modify the script to set the correct answers based on your knowledge.
-
-### Adding Categories
-
-To add a category field to each question:
-
-```bash
-node add_category.js
-```
-
-This script will:
-1. Add an empty `category` field to each question in the JSON file
-2. Save the updated questions back to the file
-
-You can then manually edit the JSON file to set the appropriate category for each question. This allows you to organize questions by topic, difficulty, or any other classification system you prefer.
-
-## JSON Structure
-
-The questions are stored in the following format:
-
+Each question has the following structure:
 ```json
-[
-  {
-    "id": "1",
-    "question": "Question text",
-    "correctAnswer": "a",
-    "category": "Constitutional Law",
-    "answers": [
-      {
-        "option": "a",
-        "text": "Answer text"
-      },
-      {
-        "option": "b",
-        "text": "Answer text"
-      },
-      ...
-    ]
-  },
-  ...
-]
+{
+  "id": "1",
+  "question": "Question text goes here?",
+  "answers": [
+    {
+      "option": "a",
+      "text": "Answer option A"
+    },
+    {
+      "option": "b",
+      "text": "Answer option B"
+    },
+    {
+      "option": "c",
+      "text": "Answer option C"
+    },
+    {
+      "option": "d",
+      "text": "Answer option D"
+    }
+  ],
+  "correctAnswer": "a",
+  "category": "Category Name"
+}
 ```
 
-## Requirements
+## Technologies Used
 
-- Node.js
-- pdf-parse library
+- **Frontend**: HTML, CSS, JavaScript, Bootstrap 5, Font Awesome 6
+- **Backend**: Node.js, Express
+- **Data Storage**: JSON file, localStorage
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

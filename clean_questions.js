@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 // Path to the questions file
 const questionsPath = './data/questions.json';
@@ -29,13 +29,13 @@ questions.forEach(question => {
     question.answers.forEach(answer => {
       if (answer.text) {
         const originalText = answer.text;
-        
+
         // Apply all patterns
         let newText = originalText;
         patterns.forEach(pattern => {
           newText = newText.replace(pattern, '');
         });
-        
+
         // Update if changed
         if (newText !== originalText) {
           answer.text = newText;

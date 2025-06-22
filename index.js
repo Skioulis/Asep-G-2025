@@ -1,98 +1,86 @@
-const fs = require('fs');
-const pdfParse = require('pdf-parse');
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
-// Path to the PDF file
-const pdfPath = './data/asep_questions.pdf';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Read the PDF file
-const dataBuffer = fs.readFileSync(pdfPath);
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Function to extract questions and answers from text
-function extractQuestions(text) {
-    const questions = [];
+// Serve static files
+app.use(express.static(path.join(__dirname)));
+app.use(express.json());
 
-    // Regular expression to match question patterns
-    // Looking for patterns like: "41. Question text? a. Answer1 b. Answer2 c. Answer3 d. Answer4"
-    const questionRegex = /(\d+)\.\s+(.*?)(?=\n[αβγδ]\.\s+|\n\d+\.|\n$)/gs;
-    const answerRegex = /([αβγδ])\.\s+(.*?)(?=\n[αβγδ]\.\s+|\n\d+\.|\n$)/gs;
-
-    let questionMatch;
-    while ((questionMatch = questionRegex.exec(text)) !== null) {
-        const questionNumber = questionMatch[1];
-        const questionText = questionMatch[2].trim();
-
-        // Skip if the question text is empty or too short (likely a false match)
-        if (questionText.length < 5) continue;
-
-        // Extract the portion of text that might contain answers for this question
-        const nextQuestionIndex = text.indexOf(`${parseInt(questionNumber) + 1}.`, questionMatch.index);
-        const questionEndIndex = nextQuestionIndex !== -1 ? nextQuestionIndex : text.length;
-        const questionSection = text.substring(questionMatch.index, questionEndIndex);
-
-        // Extract answers for this question
-        const answers = [];
-        let answerMatch;
-        answerRegex.lastIndex = 0; // Reset regex index
-        let correctAnswer = null;
-
-        while ((answerMatch = answerRegex.exec(questionSection)) !== null) {
-            const greekOption = answerMatch[1]; // α, β, γ, or δ
-            const answerText = answerMatch[2].trim();
-
-            // Convert Greek option to English
-            let englishOption = greekOption;
-            if (greekOption === 'α') englishOption = 'a';
-            if (greekOption === 'β') englishOption = 'b';
-            if (greekOption === 'γ') englishOption = 'c';
-            if (greekOption === 'δ') englishOption = 'd';
-
-            // In the PDF, the correct answer is in red letters
-            // Since we can't directly detect colors from the text extraction,
-            // we'll need to manually set the correct answers later
-
-            answers.push({
-                option: englishOption,
-                text: answerText
-            });
-        }
-
-        // Only add if we found both question and answers
-        if (answers.length > 0) {
-            questions.push({
-                id: questionNumber,
-                question: questionText,
-                correctAnswer: null, // This will be set manually later
-                answers: answers
-            });
-        }
+// API endpoint to get all questions
+app.get('/api/questions', (req, res) => {
+    try {
+        const questionsPath = path.join(__dirname, 'data', 'questions.json');
+        const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
+        res.json(questions);
+    } catch (error) {
+        console.error('Error reading questions:', error);
+        res.status(500).json({ error: 'Failed to load questions' });
     }
+});
 
-    return questions;
-}
+// API endpoint to save changes to questions
+app.post('/api/questions', (req, res) => {
+    try {
+        const questionsPath = path.join(__dirname, 'data', 'questions.json');
 
-// Parse the PDF content
-pdfParse(dataBuffer).then(data => {
-    // Extract questions from the PDF text
-    const questions = extractQuestions(data.text);
+        // Create a backup before saving
+        const backupPath = path.join(__dirname, 'data', `questions_backup_${Date.now()}.json`);
+        fs.copyFileSync(questionsPath, backupPath);
 
-    // Save questions to JSON file
-    fs.writeFileSync('./data/questions.json', JSON.stringify(questions, null, 2), 'utf8');
-    console.log(`Extracted ${questions.length} questions and saved to questions.json`);
+        // Save the updated questions
+        fs.writeFileSync(questionsPath, JSON.stringify(req.body, null, 2), 'utf8');
 
-    // Save questions to CSV file
-    const csvHeader = 'ID,Question,OptionA,OptionB,OptionC,OptionD\n';
-    const csvRows = questions.map(q => {
-        const options = {};
-        q.answers.forEach(a => {
-            options[a.option] = a.text.replace(/,/g, ' ');
+        res.json({ success: true, message: 'Questions saved successfully' });
+    } catch (error) {
+        console.error('Error saving questions:', error);
+        res.status(500).json({ error: 'Failed to save questions' });
+    }
+});
+
+// Serve the main HTML file for all other routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Start the server
+const server = app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log('Press Ctrl+C to stop the server');
+    console.log('Or visit http://localhost:' + PORT + '/stop to stop the server');
+});
+
+// API endpoint to stop the server
+app.get('/stop', (req, res) => {
+    res.send('Server is shutting down...');
+    console.log('Server shutdown requested via /stop endpoint');
+    setTimeout(() => {
+        server.close(() => {
+            console.log('Server has been stopped');
+            process.exit(0);
         });
+    }, 1000); // Give the response time to be sent
+});
 
-        return `${q.id},"${q.question.replace(/"/g, '""')}","${options['a'] || ''}","${options['b'] || ''}","${options['c'] || ''}","${options['d'] || ''}"`;
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
     });
+});
 
-    fs.writeFileSync('./data/questions.csv', csvHeader + csvRows.join('\n'), 'utf8');
-    console.log(`Extracted ${questions.length} questions and saved to questions.csv`);
-
-}).catch(error => {
-    console.error('Error reading PDF:', error);
+process.on('SIGINT', () => {
+    console.log('SIGINT received, shutting down gracefully');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
 });

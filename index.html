@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASEP Question Manager</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .question-card {
+            margin-bottom: 20px;
+            border-left: 5px solid #007bff;
+        }
+        .correct-answer {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .edit-form {
+            display: none;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        .category-badge {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-book-open me-2"></i>
+                ASEP Question Manager
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-random fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">25 Random Questions</h5>
+                        <p class="card-text">Display a set of 25 randomly selected questions from the database.</p>
+                        <button id="randomQuestionsBtn" class="btn btn-primary">
+                            <i class="fas fa-dice me-2"></i>Show Random Questions
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-list-ul fa-3x mb-3 text-success"></i>
+                        <h5 class="card-title">All Questions</h5>
+                        <p class="card-text">View the complete list of all questions in the database.</p>
+                        <button id="allQuestionsBtn" class="btn btn-success">
+                            <i class="fas fa-list me-2"></i>Show All Questions
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-edit fa-3x mb-3 text-warning"></i>
+                        <h5 class="card-title">Edit Questions</h5>
+                        <p class="card-text">Edit all questions to fix errors or update content.</p>
+                        <button id="editQuestionsBtn" class="btn btn-warning">
+                            <i class="fas fa-pencil-alt me-2"></i>Edit Questions
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div id="loading" class="loading d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="questionsContainer"></div>
+                <div id="paginationContainer" class="d-flex justify-content-center mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
