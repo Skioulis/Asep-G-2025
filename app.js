@@ -22,15 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let userAnswers = {};
     let quizCompleted = false;
 
-    // Fetch questions from API
+    // Get questions from static data
     async function fetchQuestions() {
         showLoading(true);
         try {
-            const response = await fetch('/api/questions');
-            if (!response.ok) {
-                throw new Error('Failed to fetch questions');
-            }
-            allQuestions = await response.json();
+            // Use the static data from questions.js instead of fetching from the server
+            allQuestions = allQuestionsData;
             showLoading(false);
             return allQuestions;
         } catch (error) {
@@ -598,45 +595,11 @@ document.addEventListener('DOMContentLoaded', function() {
         saveChangesToLocalStorage();
     }
 
-    // Save changes to localStorage and server
-    async function saveChangesToLocalStorage() {
+    // Save changes to localStorage only (static site)
+    function saveChangesToLocalStorage() {
         // Save to localStorage
         localStorage.setItem('asepQuestions', JSON.stringify(allQuestions));
-
-        // Save to server
-        try {
-            const response = await fetch('/api/questions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(allQuestions)
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to save questions to server');
-            }
-
-            const result = await response.json();
-            console.log('Saved to server:', result);
-        } catch (error) {
-            console.error('Error saving to server:', error);
-            // Show error message but don't interrupt the user
-            const errorAlert = document.createElement('div');
-            errorAlert.className = 'alert alert-warning alert-dismissible fade show';
-            errorAlert.innerHTML = `
-                <i class="fas fa-exclamation-triangle me-2"></i>Changes saved locally but failed to save to server: ${error.message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            document.querySelector('.container').prepend(errorAlert);
-
-            // Remove error message after 5 seconds
-            setTimeout(() => {
-                if (errorAlert.parentNode) {
-                    errorAlert.parentNode.removeChild(errorAlert);
-                }
-            }, 5000);
-        }
+        console.log('Changes saved to localStorage');
     }
 
     // Handler functions for quiz navigation (exposed to window for button onclick)
