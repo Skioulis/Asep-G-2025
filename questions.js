@@ -511,8 +511,8 @@ const allQuestionsData =
                 "text": "Το πρόσωπο που προτείνει η κοινοβουλευτική ομάδα του πρώτου κόμματος"
               }
             ],
-            "correctAnswer": "b",
-            "category": "c"
+            "correctAnswer": "c",
+            "category": "Συνταγματικό Δίκαιο"
           },
           {
             "id": "22",
@@ -3415,7 +3415,7 @@ const allQuestionsData =
                 "text": "Επανάκριση της υπόθεσης από τη διοίκηση κατ ́εφαρμογή των κανόνων ανάκλησης πράξεων"
               }
             ],
-            "correctAnswer": "a",
+            "correctAnswer": "b",
             "category": "Διοικητικό Δίκαιο"
           },
           {
@@ -5239,7 +5239,7 @@ const allQuestionsData =
                 "text": "Καμία από τις λοιπές απαντήσεις"
               }
             ],
-            "correctAnswer": "b",
+            "correctAnswer": "c",
             "category": "Οικονομικές Επιστήμες"
           },
           {
