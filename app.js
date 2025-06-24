@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // Use the static data from questions.js instead of fetching from the server
             allQuestions = allQuestionsData;
+
             showLoading(false);
             return allQuestions;
         } catch (error) {
@@ -212,8 +213,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Get n random questions from array (ensuring uniqueness)
+    // Get n random questions from array (ensuring uniqueness and at least 3 questions from each category)
     function getRandomQuestions(questions, n) {
+        // Create array of all question indices and shuffle them
+        const indices = Array.from({length: questions.length}, (_, i) => i)
+            .sort(() => Math.random() - 0.5)
+            .filter((_, i, arr) => arr.indexOf(_) === i)
+            .slice(0, n);
+
         // Create a map to track questions by ID to ensure uniqueness
         const uniqueQuestions = new Map();
 
@@ -227,11 +234,114 @@ document.addEventListener('DOMContentLoaded', function() {
         // Convert the unique questions back to an array
         const uniqueQuestionsArray = Array.from(uniqueQuestions.values());
 
-        // Shuffle the array
-        const shuffled = [...uniqueQuestionsArray].sort(() => 0.5 - Math.random());
+        // Use the indices to map to unique questions
+        let selectedQuestions = indices.map(index => questions[index]);
 
-        // Return the first n questions or all if there are fewer than n
-        return shuffled.slice(0, Math.min(n, shuffled.length));
+        // Group questions by category to check if we have at least 3 from each
+        const questionsByCategory = {};
+        selectedQuestions.forEach(question => {
+            const category = question.category || 'Uncategorized';
+            if (!questionsByCategory[category]) {
+                questionsByCategory[category] = [];
+            }
+            questionsByCategory[category].push(question);
+        });
+
+        const categories = Object.keys(questionsByCategory);
+        const numCategories = categories.length;
+
+        // If we have no categories, return an empty array
+        if (numCategories === 0) {
+            return [];
+        }
+
+        // Ensure we have at least 3 questions from each category
+        const minQuestionsPerCategory = 3;
+        let additionalQuestionsNeeded = 0;
+
+        // Check if we need to add more questions from any category
+        categories.forEach(category => {
+            const categoryQuestions = questionsByCategory[category];
+            if (categoryQuestions.length < minQuestionsPerCategory) {
+                additionalQuestionsNeeded += minQuestionsPerCategory - categoryQuestions.length;
+            }
+        });
+
+        // If we need additional questions to meet the minimum per category
+        if (additionalQuestionsNeeded > 0) {
+            // Get all questions not already selected
+            const selectedIds = new Set(selectedQuestions.map(q => q.id));
+
+            // For each category that needs more questions
+            categories.forEach(category => {
+                const categoryQuestions = questionsByCategory[category];
+
+                // If this category needs more questions
+                if (categoryQuestions.length < minQuestionsPerCategory) {
+                    const neededFromCategory = minQuestionsPerCategory - categoryQuestions.length;
+
+                    // Find questions from this category that aren't already selected
+                    const availableFromCategory = uniqueQuestionsArray.filter(q => 
+                        !selectedIds.has(q.id) && (q.category || 'Uncategorized') === category
+                    );
+
+                    // Shuffle and take what we need
+                    const additionalFromCategory = [...availableFromCategory]
+                        .sort(() => 0.5 - Math.random())
+                        .slice(0, neededFromCategory);
+
+                    // Add to selected questions and update selected IDs
+                    additionalFromCategory.forEach(q => {
+                        selectedQuestions.push(q);
+                        selectedIds.add(q.id);
+                    });
+                }
+            });
+        }
+
+        // If we have more questions than requested (because of adding to meet minimums)
+        if (selectedQuestions.length > n) {
+            // First, ensure we have the minimum from each category
+            const preservedQuestions = [];
+            const extraQuestions = [];
+
+            // Reorganize by category
+            const reorganizedByCategory = {};
+            selectedQuestions.forEach(question => {
+                const category = question.category || 'Uncategorized';
+                if (!reorganizedByCategory[category]) {
+                    reorganizedByCategory[category] = [];
+                }
+                reorganizedByCategory[category].push(question);
+            });
+
+            // Keep minimum from each category, mark the rest as extra
+            Object.keys(reorganizedByCategory).forEach(category => {
+                const categoryQuestions = reorganizedByCategory[category];
+                const toKeep = Math.min(minQuestionsPerCategory, categoryQuestions.length);
+
+                // Add minimum to preserved
+                preservedQuestions.push(...categoryQuestions.slice(0, toKeep));
+
+                // Add the rest to extras
+                if (categoryQuestions.length > toKeep) {
+                    extraQuestions.push(...categoryQuestions.slice(toKeep));
+                }
+            });
+
+            // Shuffle extras and take only what we need to reach n
+            const shuffledExtras = extraQuestions.sort(() => 0.5 - Math.random());
+            const extraNeeded = n - preservedQuestions.length;
+
+            // Combine preserved with needed extras
+            selectedQuestions = [
+                ...preservedQuestions,
+                ...shuffledExtras.slice(0, Math.max(0, extraNeeded))
+            ];
+        }
+
+        // Final shuffle to mix questions from different categories
+        return selectedQuestions.sort(() => 0.5 - Math.random());
     }
 
     // Display all questions with pagination
