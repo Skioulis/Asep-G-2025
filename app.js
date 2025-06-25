@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingElement = document.getElementById('loading');
 
     const userPassword = "123456";
+    const questionsToGet = 35;
 
     // State variables
     let allQuestions = [];
@@ -66,8 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
             allQuestions = await fetchQuestions();
         }
 
-        // Get 25 random questions
-        randomQuestionSet = getRandomQuestions(allQuestions, 25);
+        // Get 35 random questions
+        randomQuestionSet = getRandomQuestions(allQuestions, 35);
 
         // Display the first question
         displayCurrentQuestion();
@@ -679,7 +680,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Refresh the display to show updated content
         if (currentMode === 'random') {
             // If we're in random mode, update the randomQuestionSet and display current question
-            randomQuestionSet = getRandomQuestions(allQuestions, 25);
+            randomQuestionSet = getRandomQuestions(allQuestions, 35);
             displayCurrentQuestion();
         } else {
             displayQuestionsPage(currentPage, editMode);

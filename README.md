@@ -4,7 +4,7 @@ A web application for managing ASEP questions with Bootstrap and Font Awesome.
 
 ## Features
 
-- **25 Random Questions**: Display a set of 25 randomly selected questions from the database.
+- **35 Random Questions**: Display a set of 35 randomly selected questions from the database.
 - **All Questions**: View the complete list of all questions in the database with pagination.
 - **Edit Questions**: Edit all questions to fix errors or update content.
 
@@ -37,8 +37,8 @@ A web application for managing ASEP questions with Bootstrap and Font Awesome.
 
 ## Usage
 
-### 25 Random Questions
-Click the "Show Random Questions" button to display 25 randomly selected questions from the database. This is useful for quick review or practice.
+### 35 Random Questions
+Click the "Show Random Questions" button to display 35 randomly selected questions from the database. This is useful for quick review or practice.
 
 ### All Questions
 Click the "Show All Questions" button to view all questions in the database. The questions are paginated for easier navigation.
@@ -90,6 +90,52 @@ Each question has the following structure:
 - **Frontend**: HTML, CSS, JavaScript, Bootstrap 5, Font Awesome 6
 - **Backend**: Node.js, Express
 - **Data Storage**: JSON file, localStorage
+
+## Extracting Questions from PDF
+
+To extract questions from a PDF file and add them to the database:
+
+1. Run the extraction script to create a template JSON file:
+   ```
+   node extract_questions_from_pdf.js
+   ```
+
+2. This will create a file at `data/questions_from_pdf.json` with a sample question in the required format.
+
+3. Manually extract questions from the PDF file and add them to the template JSON file, following the format of the sample question:
+   ```json
+   {
+     "id": "1",
+     "question": "Question text goes here?",
+     "answers": [
+       {
+         "option": "a",
+         "text": "Answer option A"
+       },
+       {
+         "option": "b",
+         "text": "Answer option B"
+       },
+       {
+         "option": "c",
+         "text": "Answer option C"
+       },
+       {
+         "option": "d",
+         "text": "Answer option D"
+       }
+     ],
+     "correctAnswer": "a",
+     "category": "Category Name"
+   }
+   ```
+
+4. Once you've added all the questions, you can use the `set_correct_answers_from_pdf.js` script to set the correct answers:
+   ```
+   node set_correct_answers_from_pdf.js
+   ```
+
+5. This script will prompt you to enter the correct answer for each question, which should be the option that appears in red text in the PDF.
 
 ## License
 
