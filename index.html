@@ -13,6 +13,14 @@
             margin-bottom: 20px;
             border-left: 5px solid #007bff;
         }
+
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1rem;
+                line-height: 1.2;
+            }
+        }
+
         .correct-answer {
             background-color: #d4edda;
             border-color: #c3e6cb;
@@ -34,9 +42,10 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand text-wrap py-2" href="#">
                 <i class="fas fa-book-open me-2"></i>
-                ASEP Question Manager
+                <span class="d-inline-block fs-5">ASEP Question Manager</span>
+                <span class="d-block fs-6 fw-normal">για την περίοδο ΑΠΟ ΤΡΙΤΗ 15 ΙΟΥΛΙΟΥ 2025 ΕΩΣ ΚΑΙ ΚΥΡΙΑΚΗ 27 ΙΟΥΛΙΟΥ 2025</span>
             </a>
         </div>
     </nav>
@@ -113,6 +122,10 @@
                     <i class="fab fa-github fa-lg"></i>
                 </a>
             </div>
+        </div>
+        <div class="row mt-3">
+            <a class="btn btn-info" href="https://asep-static2.tripevo.net/">για την περίοδο ΑΠΟ ΠΕΜΠΤΗ 3 ΙΟΥΛΙΟΥ 2025 ΕΩΣ ΚΑΙ ΔΕΥΤΕΡΑ 14 ΙΟΥΛΙΟΥ 2025</a>
+
         </div>
     </footer>
     <!-- Bootstrap JS Bundle with Popper -->
